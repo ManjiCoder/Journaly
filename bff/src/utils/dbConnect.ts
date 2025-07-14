@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { myConfig } from '../../myConfig';
 
 type DB = typeof mongoose | null;
 
@@ -7,7 +8,7 @@ let cachedDB: DB = null;
 export default async function dbConnect() {
   try {
     if (cachedDB) return cachedDB;
-    const db = await mongoose.connect(process.env.MONGO_URL!);
+    const db = await mongoose.connect(myConfig.MONGO_URL);
     cachedDB = db;
     console.log('Connected to DB');
     return db;

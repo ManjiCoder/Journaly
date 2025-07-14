@@ -1,13 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import DairyModel from '@/models/DairyModel';
+import { Data } from '@/types';
 import dbConnect from '@/utils/dbConnect';
 import type { NextApiRequest, NextApiResponse } from 'next';
-
-type Data = {
-  status: string;
-  message?: string;
-  data?: any;
-};
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +13,7 @@ export default async function handler(
   switch (method) {
     case 'GET':
       const data = await DairyModel.find({});
-      res.status(200).json({ status: 'ok', data });
+      res.status(200).json({ success: true, data });
       break;
 
     case 'POST':
@@ -27,16 +22,16 @@ export default async function handler(
       if (!req.body) {
         return res
           .status(400)
-          .json({ status: 'err', message: 'No Data Provided' });
+          .json({ success: false, message: 'No Data Provided' });
       }
       const newEntry = await DairyModel.create(req.body);
-      res.status(201).json({ status: 'ok', data: newEntry });
+      res.status(201).json({ success: true, data: newEntry });
       break;
 
     default:
       res
         .status(200)
-        .json({ status: 'ok', message: 'Jai Shree Ganeshaya Namaha' });
+        .json({ success: true, message: 'Jai Shree Ganeshaya Namaha' });
       break;
   }
 }
