@@ -42,10 +42,12 @@ export default async function handler(
       ...result.data,
       password: hassPass,
     });
+
+    const { password, __v, ...userWithoutPass } = newUser.toObject();
     return res.status(201).json({
       success: true,
       message: 'Account Created Successfully',
-      data: newUser,
+      data: userWithoutPass,
     });
   } catch (err) {
     console.error(err);

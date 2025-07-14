@@ -44,10 +44,11 @@ export default async function handler(
         message: 'Incorrect Password',
       });
     }
+    const { password, __v, ...userWithoutPass } = exisitingUser.toObject();
     return res.status(200).json({
       success: true,
       message: 'Login Successfully',
-      data: exisitingUser,
+      data: userWithoutPass,
     });
   } catch (err) {
     console.error(err);
