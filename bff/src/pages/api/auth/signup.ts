@@ -1,6 +1,8 @@
 import UserModel from '@/models/UserModel';
 import userSchema from '@/schemas/userSchema';
 import { Data } from '@/types';
+import dbConnect from '@/utils/dbConnect';
+import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
@@ -25,17 +27,31 @@ export default async function handler(
   }
 
   try {
-    const newUser = await UserModel.create(result.data);
+    await dbConnect();
+    const exisitingUser = await UserModel.findOne({ email: result.data.email });
+    if (exisitingUser) {
+      return res.status(400).json({
+        success: false,
+        message: `You already have an account with this ${result.data.email}`,
+      });
+    }
+
+    const hassPass = await bcrypt.hash(result.data.password, 10);
+
+    const newUser = await UserModel.create({
+      ...result.data,
+      password: hassPass,
+    });
     return res.status(201).json({
       success: true,
       message: 'Account Created Successfully',
       data: newUser,
     });
   } catch (err) {
+    console.error(err);
     return res.status(500).json({
       success: false,
       message: 'Server Error',
-      error: err,
     });
   }
 }
