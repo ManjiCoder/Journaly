@@ -17,6 +17,8 @@ export default async function handler(
   }
 
   try {
+    // console.log(req.headers?.['x-id']);
+
     await dbConnect();
     const token = req.headers.authorization?.replace('Bearer ', '');
     if (!token) {
