@@ -1,8 +1,10 @@
 import UserModel from '@/models/UserModel';
+import { myConfig } from '@/myConfig';
 import userSchema from '@/schemas/userSchema';
 import { Data } from '@/types';
 import dbConnect from '@/utils/dbConnect';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
@@ -45,10 +47,15 @@ export default async function handler(
       });
     }
     const { password, __v, ...userWithoutPass } = exisitingUser.toObject();
+    const payload = { id: exisitingUser._id };
+    const token = jwt.sign(payload, myConfig.JWT_KEY, {
+      algorithm: 'HS256',
+      expiresIn: '5m',
+    });
     return res.status(200).json({
       success: true,
       message: 'Login Successfully',
-      data: userWithoutPass,
+      data: { user: userWithoutPass, token },
     });
   } catch (err) {
     console.error(err);

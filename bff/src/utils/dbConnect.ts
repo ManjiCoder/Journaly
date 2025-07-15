@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { myConfig } from '../../myConfig';
+import { myConfig } from '../myConfig';
 
 type DB = typeof mongoose | null;
 
