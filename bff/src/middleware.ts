@@ -22,6 +22,9 @@ export async function middleware(req: NextRequest) {
   // Public API
   const url = req.nextUrl;
   const origin = req.headers.get('origin');
+  const whileListOrigin = ['http://localhost:5173'];
+  const { method } = req;
+
   if (url.pathname === '/api/hello') {
     const res = NextResponse.next();
     res.headers.set('Access-Control-Allow-Origin', '*');
@@ -30,7 +33,21 @@ export async function middleware(req: NextRequest) {
   }
   // Private API
   else {
-    const whileListOrigin = ['http://localhost:5173'];
+    // Handle preflight
+    if (method === 'OPTIONS') {
+      return new NextResponse(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': whileListOrigin.includes(origin || '')
+            ? origin!
+            : '',
+          'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      });
+    }
+
+    // Block unknown origins
     if (!origin || !whileListOrigin.includes(origin)) {
       return new NextResponse(
         JSON.stringify({
@@ -40,8 +57,9 @@ export async function middleware(req: NextRequest) {
         { status: 403 }
       );
     }
+
     const res = NextResponse.next();
-    res.headers.set('Access-Control-Allow-Origin', whileListOrigin.join(','));
+    res.headers.set('Access-Control-Allow-Origin', origin);
     res.headers.set(
       'Access-Control-Allow-Methods',
       'GET, POST, PATCH, PUT, DELETE'
@@ -50,6 +68,7 @@ export async function middleware(req: NextRequest) {
       'Access-Control-Allow-Headers',
       'Content-Type, Authorization'
     );
+    console.log(origin, res.headers);
     return res;
   }
 }
