@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { myConfig } from './myConfig';
 import { verifyToken } from './utils/auth';
 
-export async function middleware(req: NextRequest) {
+const verifyUser = async (req: NextRequest) => {
   try {
     const res = NextResponse.next();
     const token = req.headers
@@ -17,4 +17,43 @@ export async function middleware(req: NextRequest) {
   } catch (err) {
     console.error(err);
   }
+};
+export async function middleware(req: NextRequest) {
+  // Public API
+  const url = req.nextUrl;
+  const origin = req.headers.get('origin');
+  if (url.pathname === '/api/hello') {
+    const res = NextResponse.next();
+    res.headers.set('Access-Control-Allow-Origin', '*');
+    res.headers.set('Access-Control-Allow-Methods', 'GET');
+    return res;
+  }
+  // Private API
+  else {
+    const whileListOrigin = ['http://localhost:5173'];
+    if (!origin || !whileListOrigin.includes(origin)) {
+      return new NextResponse(
+        JSON.stringify({
+          success: false,
+          message: 'Forbidden Access',
+        }),
+        { status: 403 }
+      );
+    }
+    const res = NextResponse.next();
+    res.headers.set('Access-Control-Allow-Origin', whileListOrigin.join(','));
+    res.headers.set(
+      'Access-Control-Allow-Methods',
+      'GET, POST, PATCH, PUT, DELETE'
+    );
+    res.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization'
+    );
+    return res;
+  }
 }
+
+export const config = {
+  matcher: ['/api/:path*'],
+};
