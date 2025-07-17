@@ -14,6 +14,9 @@ export default function DiaryContent() {
   const handleSumbit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const payload = quill?.getSemanticHTML();
+    if (quill?.getText().trim().length === 0) {
+      return toast.error('No Content');
+    }
     const response = axiosClient.post('/dairy', {
       userId: '6867d7414f600693ac5dd50e',
       content: payload,

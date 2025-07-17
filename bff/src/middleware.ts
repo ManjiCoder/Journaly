@@ -46,16 +46,21 @@ export async function middleware(req: NextRequest) {
         },
       });
     }
+    const isDevMode =
+      req.headers.get('user-agent') ===
+      'Thunder Client (https://www.thunderclient.com)';
 
     // Block unknown origins
     if (!origin || !whileListOrigin.includes(origin)) {
-      return new NextResponse(
-        JSON.stringify({
-          success: false,
-          message: 'Forbidden Access',
-        }),
-        { status: 403 }
-      );
+      if (!isDevMode) {
+        return new NextResponse(
+          JSON.stringify({
+            success: false,
+            message: 'Forbidden Access',
+          }),
+          { status: 403 }
+        );
+      }
     }
 
     const res = NextResponse.next();
@@ -68,7 +73,6 @@ export async function middleware(req: NextRequest) {
       'Access-Control-Allow-Headers',
       'Content-Type, Authorization'
     );
-    console.log(origin, res.headers);
     return res;
   }
 }
