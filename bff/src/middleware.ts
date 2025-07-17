@@ -63,17 +63,19 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    const res = NextResponse.next();
-    res.headers.set('Access-Control-Allow-Origin', origin);
-    res.headers.set(
-      'Access-Control-Allow-Methods',
-      'GET, POST, PATCH, PUT, DELETE'
-    );
-    res.headers.set(
-      'Access-Control-Allow-Headers',
-      'Content-Type, Authorization'
-    );
-    return res;
+    if (origin) {
+      const res = NextResponse.next();
+      res.headers.set('Access-Control-Allow-Origin', origin);
+      res.headers.set(
+        'Access-Control-Allow-Methods',
+        'GET, POST, PATCH, PUT, DELETE'
+      );
+      res.headers.set(
+        'Access-Control-Allow-Headers',
+        'Content-Type, Authorization'
+      );
+      return res;
+    }
   }
 }
 

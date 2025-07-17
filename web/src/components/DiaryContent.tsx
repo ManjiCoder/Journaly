@@ -1,6 +1,7 @@
 import { useQuill } from 'react-quilljs';
 // or const { useQuill } = require('react-quilljs');
 
+import { useAppSelector } from '@/redux/hooks';
 import { axiosClient } from '@/services/axiosClient';
 import 'quill/dist/quill.snow.css'; // Add css for snow theme
 import type { FormEvent } from 'react';
@@ -10,6 +11,7 @@ import { Button } from './ui/button';
 
 export default function DiaryContent() {
   const { quill, quillRef } = useQuill();
+  const user = useAppSelector((state) => state.user);
 
   const handleSumbit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ export default function DiaryContent() {
       return toast.error('No Content');
     }
     const response = axiosClient.post('/dairy', {
-      userId: '6867d7414f600693ac5dd50e',
+      userId: user?._id,
       content: payload,
     });
     toast.promise(response, {

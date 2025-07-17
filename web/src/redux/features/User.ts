@@ -1,12 +1,14 @@
+// store/userSlice.ts
 import type { User } from '@/types';
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-const initialState: User | null = null;
+type UserState = User | null;
+
 const userSlice = createSlice({
   name: 'user',
-  initialState,
+  initialState: null as UserState,
   reducers: {
-    Login(state, action) {
+    Login(_state, action: PayloadAction<User>) {
       return action.payload;
     },
     Logout() {
@@ -16,4 +18,5 @@ const userSlice = createSlice({
 });
 
 export const { Login, Logout } = userSlice.actions;
-export const UserSlice = userSlice.reducer;
+
+export default userSlice.reducer;
