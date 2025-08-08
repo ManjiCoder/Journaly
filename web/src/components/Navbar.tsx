@@ -8,7 +8,7 @@ export default function Navbar() {
 
   return (
     <nav className='flex justify-between px-3 py-4'>
-      <span className='text-2xl font-bold'>Journalys</span>
+      <span className='text-2xl font-bold'>JournaLys</span>
       <div className='flex gap-5'>
         <ToggleTheme />
         {user ? (

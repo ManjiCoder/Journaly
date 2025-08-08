@@ -39,11 +39,14 @@ export default async function handler(
       message: 'User Verified Successfully',
       data: user,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     res.status(500).json({
       success: false,
-      message: 'Server Error',
+      message:
+        err?.message === 'jwt expired'
+          ? 'Authetication Failed! Please log in again.'
+          : 'Something went wrong! Please try again later.',
     });
   }
 }
