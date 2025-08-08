@@ -40,31 +40,39 @@ export async function middleware(req: NextRequest) {
 
   // Block unknown origins
   if (!origin || !whileListOrigin.includes(origin)) {
-    const token = req.headers
-      .get('authorization')
-      ?.replace('Bearer ', '') as string;
-    if (!token) {
-      return new NextResponse(
-        JSON.stringify({
-          success: false,
-          message: 'Please autheticate using a valid token',
-        }),
-        { status: 401 }
-      );
-    }
-    const payload = await verifyToken(token, myConfig.JWT_KEY);
-    // console.log(payload);
+    return new NextResponse(
+      JSON.stringify({
+        success: false,
+        message: 'Forbidden Access',
+      }),
+      { status: 403 }
+    );
+  }
 
-    // res.headers.set('x-id', payload.id);
-    if (!payload) {
-      return new NextResponse(
-        JSON.stringify({
-          success: false,
-          message: 'Invalid token',
-        }),
-        { status: 401 }
-      );
-    }
+  const token = req.headers
+    .get('authorization')
+    ?.replace('Bearer ', '') as string;
+  if (!token) {
+    return new NextResponse(
+      JSON.stringify({
+        success: false,
+        message: 'Please autheticate using a valid token',
+      }),
+      { status: 401 }
+    );
+  }
+  const payload = await verifyToken(token, myConfig.JWT_KEY);
+  // console.log(payload);
+
+  // res.headers.set('x-id', payload.id);
+  if (!payload) {
+    return new NextResponse(
+      JSON.stringify({
+        success: false,
+        message: 'Invalid token',
+      }),
+      { status: 401 }
+    );
   }
 
   const res = NextResponse.next();
